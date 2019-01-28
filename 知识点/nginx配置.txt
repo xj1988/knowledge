@@ -1,0 +1,35 @@
+//负载均衡服务器池
+upstream tomacatJiQun{
+	server 127.0.0.1:8181 backup;		//backup热备份，其他服务器忙时请求该服务器
+	server 127.0.0.1:8182 weight=2;
+}
+
+server{
+	listen 80;
+	keepalive_requests 120; 	//单连接请求上限次数
+	server_name  127.0.0.1;	//监听地址
+	location / {	//处理所有请求
+		proxy_pass http://127.0.0.1:8181;
+		//proxy_pass http://tomcatJiQun;	//集群时用
+		deny 127.0.0.1;	//拒绝的ip
+           		allow 172.18.5.54;	//允许的ip  
+	}
+
+	location ~\.(css|js|png)${	//静态资源访问的地址
+		root /usr/local/nginx/statas
+	}
+}
+
+session共享（使用redis）：
+1、下载解压以下jar到tomcat的lib
+jedis-2.5.2.jar
+commons-pool2-2.0.jar
+tomcat-redis-session-manager1.2.jar
+
+2、在conf/context.xml中增加
+<Valve className="com.orangefunction.tomcat.redissessions.RedisSessionHandlerValve" />  
+  <Manager className="com.orangefunction.tomcat.redissessions.RedisSessionManager"  
+   host="127.0.0.1"  
+   port="6379"  
+   database="0"  
+   maxInactiveInterval="60" /> 

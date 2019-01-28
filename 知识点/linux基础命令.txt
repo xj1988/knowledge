@@ -1,0 +1,298 @@
+etc：配置文件文件夹
+user：安装软件文件夹
+root：家文件夹，相当于windows界面
+
+man ls：打开帮助文档
+
+ls，列出目录内容：
+	-a查看所有文件
+	-l查看所有细节
+	-h友好显示文件信息
+
+展示某文件夹目录信息：
+	ls -l -h /etc
+
+cd，切换目录：
+	cd ../：向上一层目录
+	cd /：切换到根目录
+	cd ~：切换到管理员目录
+	cd -：回到上次访问目录
+	cd /目录名：切换到根目录下的指定目录，/目录名，是linux的绝对路径
+	cd 目录名：切换到指定目录，相对路径
+
+pwd，返回绝对路径
+
+wget 下载地址，下载到当前路径
+
+df，查看磁盘信息
+
+free -m，查看内存信息，单位为兆
+
+touch linux.txt，创建文件
+
+mkdir，创建文件夹：
+	mkdir t1/t2：相对路径创建
+	mkdir /root/t1/t2：绝对路径创建
+	mkdir -p t3/t4：若t3、t4不存在则创建t3、t4，存在则啥也不做
+
+rmdir，删除空目录
+
+文件开头信息：
+	d开头：文件夹
+	-开头：文件
+	l开头：链接文件，相当于快捷方式
+
+文件浏览命名：
+cat，快捷查看当前文件，适合查看少量信息的文件。
+
+cat linux1.txt linux2.txt linux3.txt > hehe.txt，合并显示linux1、2、3中的内容到呵呵中
+
+cat linux1.txt linux2.txt lintxt3.txt >> hehe.txt，追加linux1、2、3中的内容到hehe中
+
+more，查看大文件：
+	enter，查看下一行
+	空格键，查看下一页
+	b，返回上一页
+	q， 退出
+
+less -mN 文件名
+
+tail -10 文件名，查看文件后10行文件
+
+tail -f，实时   显示系统添加的信息
+
+head -10 文件名，查看文件前10行文件
+
+文件操作命令：
+cp 1.txt xj2：把文件1复制到xj2，相对路径
+
+cp /1.txt /xj2：绝对路径
+
+cp 1.txt /xj2/2.txt：更改名字
+
+cp -r xj1 xj2：将xj1及xj2下的所有文件复制到xj2 
+
+mv hjp xj：有xj则是移动hjp，没则是更改名称
+
+rm -r xj：级联删除
+
+find /搜索路径 -name 'lin*'：root目录下所有以lin开头的文件
+
+vim hehe.txt：文本编辑模式，按i进入插入模式，按：进入低行模式，q!强制退出，wq保存退出
+
+grep -i 'cd' hehe.txt：返回关键字所在行(忽略大小写)
+
+压缩解压命令：
+tar -zcvf hehe.tar.gz * ：压缩当前文件夹的所有文件到hehe
+
+tar -zxvf hehe.tar.gz：解压hehe到当前文件夹
+
+tar -zxvf hehe.tar.gz -C xj：把hehe解压到xj文件夹下
+
+系统命令
+ps -ef，查看系统进程
+
+netstat -anp，查看端口占用
+
+kill -9 pid，杀死进程
+
+reboot，重启
+
+halt，关机
+
+netstat -tunlp | grep 端口号，查看端口使用
+
+权限
+d,rwx,r-x,r-x：文件类型，所属用户权限u，所属组织权限g，其他用户权限o
+chmod u=w xj
+chmod -r u=w xj：更改文件夹xj及xj内所有文件权限
+chmod +x xj，添加可执行权限
+chmod o+x file:赋予其他用户执行文件的权限，o:角色，+:添加，x:执行权限
+
+rpm -ivh 程序名：安装程序
+rpm -e --nodeps 程序名：卸载程序
+rpm -qa：查看所有程序
+
+
+yum list，列出当前已经装的和可以装的软件
+yum search 软件名，搜索指定的关键的包
+yum -y install 软件名
+yum -y update 软件名
+yum -y remove 软件名
+
+linux环境依赖
+yum install glibc.i686(jdk依赖)
+yum -y install libaio.so.1 libgcc_s.so.1 libstdc++.so.6（mysql依赖）
+yum update libstdc++-4.4.7-4.el6.x86_64（检查mysql依赖是否安装成功）
+yum install gcc-c++（redis依赖）
+yum -y install gcc zlib zlib-devel pcre-devel openssl openssl-devel（nginx依赖）
+
+查看是否安装了某些软件
+rpm -qa | grep -i jdk
+
+安装jdk
+1、下载linux平台的jdk
+2、上传到linux
+3、mkdir -p /usr/local/java（创建文件夹）
+4、vim /etc/profile（打开配置文件）
+5、#set java environment（修改环境变量）
+	JAVA_HOME=/usr/local/java/jdk1.8.0_191
+	CLASSPATH=.:$JAVA_HOME/lib.tools.jar
+	PATH=$JAVA_HOME/bin:$PATH
+	export JAVA_HOME CLASSPATH PATH
+6、source /etc/profile（重载配置文件）
+
+安装mysql
+1、上传安装包到root：
+	rpm -ivh MySQL-client-5.6.39-1.el6.x86_64.rpm
+	rpm -ivh MySQL-server-5.6.39-1.el6.x86_64.rpm
+
+2、设置密码：
+	mysql -u root -p：登录mysql
+	SET PASSWORD = PASSWORD('some password')：登录后修改密码
+
+3、开机自启动设置
+	chkconfig --add mysql
+	chkconfig mysql on
+
+4、开启远程服务
+设置mysql远程登录：
+	grant all privileges on *.* to 'root' @'%' identified by 'root';
+	flush privileges；
+
+设置linux远程登录：
+	/sbin/iptables -I INPUT -p tcp --dport 3306 -j ACCEPT（开启端口）
+	/etc/rc.d/init.d/iptables save（保存设置）
+
+5、mysql的启动控制
+	service mysqlid start/stop/restart
+
+	exit,进入到mysql后退回到linux
+
+
+安装tomcat
+1、创建文件夹：
+	mkdir -p /usr/local/tomcat
+
+2、解压tomcat到上述文件夹：
+	tar -zxvf *** -C /usr/local/tomcat
+
+3、开启tomcat（/usr/local/tomcat/apache-tomcat-8.0.53/bin目录下）
+	./stsrtup.sh
+
+4、开启8080端口
+	/sbin/iptables -I INPUT -p tcp --dport 8080 -j ACCEPT
+	/etc/rc.d/init.d/iptables save
+	
+安装redis
+1、上传到root
+2、解压到当前目录
+	tar -zxvf ***
+
+3、进入到redis安装目录
+	make MALLOC=libc（编译安装文件）
+
+4、复制文件
+	cp redis.conf /usr/local/redis（redis.conf在redis的解压文件夹下）
+
+5、改为后端启动
+	vim redis.conf（将daemonize 后的no改为yes）
+
+6、启动redis（安装目录下）
+	./bin/redis-server ./redis.conf
+	连接redis客户端
+	./bin/redis-cli
+
+7、关闭redis
+	./bin/redis-cli shutdown
+
+安装nginx
+1、上传安装包到root
+2、配置环境
+	yum -y install gcc zlib zlib-devel pcre-devel openssl openssl-devel
+
+3、解压安装nginx
+	mkdir -p /usr/local/nginx
+	tar -zxvf nginx-1.15.6.tar.gz -C /usr/local/nginx
+	cd /usr/local/nginx/nginx-1.15.6
+	./configure
+	make
+	make install
+
+4、启动（sbin目录下）
+	./nginx
+	./nginx -s stop（停止）
+	./nginx -s reload（重启）
+
+安装keepalived
+1、mkdir -p /usr/local/keepalived
+2、tar -zxvf keepalived.jar -C /usr/local/keepalived
+3、在安装目录下执行，./configure --prefix=/usr/local/keepalived
+4、make&&make install
+	
+
+redis命令
+string的赋值：
+	set key value（key相同，value会覆盖）
+	get key（获得value）
+	del key（删除key和value）
+	getseyt key value（先返回value，后设置value）
+	incr key（将key加一并返回value）
+	decr key（将key减一并返回value）
+	append key value（在value后追加字符串）
+	incrby key 10（加10）
+	decrby key 10（减10）
+	flushdb（删除所有数据）
+
+hash的赋值：
+	hset key key value（设置一个字段的value）
+	hmset key username lisi age 23 sex boy（设置多个字段的value）
+	hgetall key（获得所有key和value）
+	hdel key value（删除key和value）
+	hincrby key age 10（年龄增加10）
+	hexists key username（判断是否存在）
+	hlen key （返回键值对对数）
+	hkeys key（返回字段名）
+	hvals key（返回所有值）
+	del key（删除整个map ）
+
+yum install mysql-server
+
+show databases，显示所有数据库
+drop test，删除test数据库
+use test，选用test数据库
+
+show tables，显示所有表
+desc tablename
+
+备份：mysqldump -uroot -proot 数据库名 > 备份文件路径
+还原：mysql -uroot -proot 数据库名 < 备份文件路径
+
+搭建LAMP环境
+1、安装php（会顺带安装上apache）
+	yum -y install php
+	vim /etc/httpd/conf/httpd.conf，将ServerName前的注释去掉
+	service httpd start，启动apache
+	mkdir /var/www/html index.php，写入<?php phpinfo();?>，在浏览器输入IP测试php
+	
+2、安装mysql
+	yum -y install mysql-server 
+	service mysqld start
+	mysql_secure_installation
+	mysql -u root -p
+	chkconfig --add mysqld（在服务清单中添加mysql服务）
+ 	chkconfig mysqld on（设置mysql服务随开机启动）
+
+
+安装zookeeper
+1、mkdir -p /usr/local/zookeeper
+2、tar -zxvf zookeeper.tar.gz -C /usr/local/zookeeper
+3、在解压后的zookeeper中创建data文件夹
+3、mv zoo_simple.cfg zoo.cfg
+4、将zoo.cfg的dataDir改为data的路径
+5、./bin/zkService.sh start/status/stop
+
+dubbo视图化管理端工具
+1、解压dubbo的源码jar包
+2、进入到admin文件夹，mvn package -Dmaven.skip.test=true
+3、将war包上传到服务器tomcat的webapps下，密码root，账号root

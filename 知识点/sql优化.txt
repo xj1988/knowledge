@@ -1,0 +1,13 @@
+1、尽量避免全表查询，首先考虑在where及order by涉及的列上建立索引（没建立索引也是全表扫描）
+
+2、最好不要给数据库字段留null，char(100)会占用空间（varchar不会），
+而且判断一个值等于null时会进行全表扫描
+
+3、能用exists的就不用in，in会导致全表扫描，in的作用相当于or
+select num from a where exists(select 1 from b where num=a.num)
+
+4、避免在where子句中对字段进行函数操作，因为会在每行函数运算
+
+5、如果只含有数字信息的字段尽量不要设计为字符型，因为查询和连接时会逐个比较
+
+6、'%dd%'不会用到索引，'d%'会用到索引
